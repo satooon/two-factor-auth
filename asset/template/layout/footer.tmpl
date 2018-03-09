@@ -1,0 +1,17 @@
+{{ define "footer" }}
+<style type="text/css">
+    .footer {
+        padding: 10px;
+    }
+</style>
+
+<footer class="footer">
+    {{range .Error}}
+        <div class="alert alert-danger">{{.}}</div>
+    {{end}}
+
+    {{range .Success}}
+        <div class="alert alert-success">{{.}}</div>
+    {{end}}
+</footer>
+{{ end }}

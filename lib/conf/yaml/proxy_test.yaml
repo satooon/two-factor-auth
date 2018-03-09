@@ -1,0 +1,7 @@
+proxy:
+  - name: hoge
+    description: Hoge
+    dest: http://127.0.0.1:9200
+  - name: fuga
+    description: fuga
+    dest: http://127.0.0.1:8086
