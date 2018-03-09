@@ -1,0 +1,19 @@
+{{ define "content" }}
+
+<div class="container-fluid">
+    <form action="/auth/sign_in" method="post">
+        <div class="form-group">
+            <label for="mail">mail</label>
+            <input type="email" class="form-control" id="mail" placeholder="mail">
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" class="form-control" id="password" placeholder="password">
+        </div>
+        <button type="submit" class="btn btn-primary">サインイン</button>
+    </form>
+</div>
+
+{{ template "footer" . }}
+
+{{ end }}

@@ -1,0 +1,43 @@
+{{ define "content" }}
+
+{{ template "header" . }}
+
+<style type="text/css">
+    nav {
+        margin-bottom: 10px;
+    }
+</style>
+
+<div class="container-fluid">
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark justify-content-end">
+        <form class="my-2 my-lg-0" action="/admin/sign_out" method="post">
+            <button class="btn btn-outline-info my-2 my-sm-0">SignOut</button>
+        </form>
+    </nav>
+
+    <div>
+        <form action="/admin/user/sign_up" method="post" class="form-group">
+            <h3>New user sign up</h3>
+            <div class="form-group">
+                <label for="inputEmail" class="control-label">Email</label>
+                <input type="email" name="mail" class="form-control col-md-6" id="inputEmail" placeholder="Email" required>
+            </div>
+            <div class="form-group">
+                <label for="inputPassword" class="control-label">Password</label>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <input type="password" name="password" class="form-control" id="inputPassword" placeholder="Password" required minlength="6">
+                        <small class="text-muted">Minimum of 6 characters</small>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <button class="btn btn-primary">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{ template "footer" . }}
+
+{{ end }}

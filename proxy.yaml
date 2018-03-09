@@ -1,0 +1,5 @@
+proxy:
+  - name: admin_tool
+    description: Admin Tool
+    strip_path: /admin
+    dest: http://192.168.33.10

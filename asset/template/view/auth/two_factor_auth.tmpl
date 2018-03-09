@@ -1,0 +1,17 @@
+{{ define "content" }}
+
+{{ template "header" . }}
+
+<div class="container-fluid">
+    <form action="/auth/two_factor_auth/validate" method="post">
+        <div class="form-group">
+            <label for="code">Code</label>
+            <input type="number" class="form-control" name="code">
+        </div>
+        <button class="btn btn-primary">Submit</button>
+    </form>
+</div>
+
+{{ template "footer" . }}
+
+{{ end }}

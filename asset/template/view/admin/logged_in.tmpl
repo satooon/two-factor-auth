@@ -1,0 +1,38 @@
+{{ define "content" }}
+
+{{ template "header" . }}
+
+<style type="text/css">
+    nav {
+        margin-bottom: 10px;
+    }
+</style>
+
+<div class="container-fluid">
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark justify-content-end">
+        <form class="my-2 my-lg-0" action="/admin/sign_out" method="post">
+            <button class="btn btn-outline-info my-2 my-sm-0">SignOut</button>
+        </form>
+    </nav>
+
+    <div class="list-group">
+        <a href="/admin/two_factor_auth" class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">Security</h5>
+            </div>
+            <p class="mb-1">TwoFactorAuth setting</p>
+        </a>
+        {{if .Role.PermissionAdminUserSignUp}}
+            <a href="/admin/user" class="list-group-item list-group-item-action flex-column align-items-start">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">User</h5>
+                </div>
+                <p class="mb-1">New user sign up</p>
+            </a>
+        {{end}}
+    </div>
+</div>
+
+{{ template "footer" . }}
+
+{{ end }}
