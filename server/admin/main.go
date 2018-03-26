@@ -50,7 +50,7 @@ func main() {
 	r.Use(middleware.Time())
 	r.Use(middleware.Database(db))
 
-	r.HTMLRender = (render.HTMLRender)(template.NewHtmlRender("layout/layout.tmpl", "layout/header.tmpl", "layout/footer.tmpl"))
+	r.HTMLRender = (render.HTMLRender)(template.NewHtmlRender("layout/layout.tmpl", "layout/header.tmpl", "layout/footer.tmpl", "layout/header_admin.tmpl"))
 
 	controller.AdminRoutes(r)
 	r.GET("/", func(c *gin.Context) {

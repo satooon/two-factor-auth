@@ -8,15 +8,21 @@
     }
 </style>
 
-<div class="container-fluid">
-    <nav class="navbar navbar-expand-sm bg-dark navbar-dark justify-content-end">
-        <form class="my-2 my-lg-0" action="/admin/sign_out" method="post">
-            <button class="btn btn-outline-info my-2 my-sm-0">SignOut</button>
-        </form>
-    </nav>
+<script type="text/javascript">
+    $(function () {
+        $(".confirm-delete").click(function () {
+            if (!confirm("Are you sure you want to delete?")) {
+                return false;
+            }
+        });
+    });
+</script>
 
-    <div>
-        <form action="/admin/user/sign_up" method="post" class="form-group">
+<div class="container-fluid">
+    {{ template "header_admin" . }}
+
+    <div class="col-md-10 form-group">
+        <form action="/admin/user/sign_up" method="post">
             <h3>New user sign up</h3>
             <div class="form-group">
                 <label for="inputEmail" class="control-label">Email</label>
@@ -35,6 +41,53 @@
                 <button class="btn btn-primary">Submit</button>
             </div>
         </form>
+    </div>
+
+    <hr>
+
+    <div class="col-md-12">
+        <nav>
+            <ul class="pagination">
+                <li class="page-item"><a class="page-link" href="?offset={{.UserPaginate.Prev}}">Prev</a></li>
+                {{range $i, $v := .UserPaginate.Pages}}
+                    {{if $.UserPaginate.IsCurrent $i}}
+                        <li class="page-item active"><span class="page-link">{{$v}}</span></li>
+                    {{else}}
+                        <li class="page-item"><a class="page-link" href="?offset={{$i}}">{{$v}}</a></li>
+                    {{end}}
+                {{end}}
+                <li class="page-item"><a class="page-link" href="?offset={{.UserPaginate.Next}}">Next</a></li>
+            </ul>
+        </nav>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Mail</th>
+                    <th>Role</th>
+                    <th>StateTwoFactorAuth</th>
+                    <th>CreatedAt</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range .UserPaginate.Slice}}
+                <tr>
+                    <td>{{.ID}}</td>
+                    <td>{{.DecryptMail $.EnvApp}}</td>
+                    <td>{{.GetRoleName}}</td>
+                    <td>{{.StateTwoFactorAuth}}</td>
+                    <td>{{.CreatedAt}}</td>
+                    <th>
+                        <form action="/admin/user/delete" method="post">
+                            <input type="hidden" name="id" value="{{.ID}}">
+                            <button class="confirm-delete btn btn-danger">Delete</button>
+                        </form>
+                    </th>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
     </div>
 </div>
 

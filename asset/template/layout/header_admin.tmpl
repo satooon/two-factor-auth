@@ -1,0 +1,11 @@
+{{ define "header_admin" }}
+
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark justify-content-between">
+    <a class="navbar-brand" href="/admin/logged_in">Top</a>
+
+    <form class="my-2 my-lg-0" action="/admin/sign_out" method="post">
+        <button class="btn btn-outline-info my-2 my-sm-0">SignOut</button>
+    </form>
+</nav>
+
+{{ end }}

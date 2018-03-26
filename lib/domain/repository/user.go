@@ -1,6 +1,10 @@
 package repository
 
 import (
+	"fmt"
+	"math"
+	"strconv"
+
 	"github.com/pquerna/otp"
 	"github.com/pquerna/otp/totp"
 	"github.com/satooon/two-factor-auth/lib/crypto/aes"
@@ -64,8 +68,19 @@ func (r *User) NewEntity(secret iSecret, auth iAuth, mail string, pass string, r
 	return
 }
 
+func (r *User) Count() (int, error) {
+	var c int
+	err := r.db.Table(entity.NewUser("", "", "", "", entity.RoleAdmin).TableName()).Count(&c).Error()
+	return c, err
+}
+
+func (r *User) FindByID(id ...int) (entity.UserSlice, error) {
+	s := entity.UserSlice{}
+	err := r.db.Where("id in (?)", id).Find(&s).Error()
+	return s, err
+}
+
 func (r *User) FindByMail(secret iSecret, mail ...string) (s entity.UserSlice, err error) {
-	s = entity.UserSlice{}
 	args := make([]interface{}, len(mail))
 	for i := range mail {
 		args[i], err = aes.Encrypt(secret.GetEncryptKey(), secret.GetEncryptIV(), mail[i])
@@ -73,7 +88,8 @@ func (r *User) FindByMail(secret iSecret, mail ...string) (s entity.UserSlice, e
 			return
 		}
 	}
-	err = r.db.Where("mail in (?)", args...).Find(&s).Error()
+	s = entity.UserSlice{}
+	err = r.db.Where("mail in (?)", args).Find(&s).Error()
 	return
 }
 
@@ -96,4 +112,71 @@ func (r *User) Save(e *entity.User) error {
 
 func (r *User) Delete(e *entity.User) error {
 	return r.db.Delete(e).Error()
+}
+
+func (r *User) Paginate(limit, offset interface{}) (*userPaginate, error) {
+	var slice entity.UserSlice
+	if err := r.db.Limit(limit).Offset(offset).Find(&slice).Error(); err != nil {
+		return nil, err
+	}
+	count, err := r.Count()
+	if err != nil {
+		return nil, err
+	}
+	return &userPaginate{
+		Count:  count,
+		Limit:  limit,
+		Offset: offset,
+		Slice:  slice,
+	}, nil
+}
+
+type userPaginate struct {
+	Count  int
+	Limit  interface{}
+	Offset interface{}
+	Slice  entity.UserSlice
+}
+
+func (u *userPaginate) offset() int {
+	offset, _ := strconv.Atoi(fmt.Sprintf("%v", u.Offset))
+	return offset
+}
+
+func (u *userPaginate) limit() int {
+	limit, _ := strconv.Atoi(fmt.Sprintf("%v", u.Limit))
+	return limit
+}
+
+func (u *userPaginate) Pages() map[int]int {
+	limit := u.limit()
+	size := int(math.Ceil(float64(u.Count) / float64(limit)))
+	p := make(map[int]int, size)
+	for i := 0; i < size; i++ {
+		idx := i * limit
+		p[idx] = i + 1
+	}
+	return p
+}
+
+func (u *userPaginate) IsCurrent(p int) bool {
+	return u.offset() == p
+}
+
+func (u *userPaginate) Prev() int {
+	offset := u.offset()
+	if offset <= 0 {
+		return 0
+	}
+	limit := u.limit()
+	return offset - limit
+}
+
+func (u *userPaginate) Next() int {
+	offset := u.offset()
+	limit := u.limit()
+	if offset+limit >= u.Count {
+		return offset
+	}
+	return offset + limit
 }

@@ -9,11 +9,7 @@
 </style>
 
 <div class="container-fluid">
-    <nav class="navbar navbar-expand-sm bg-dark navbar-dark justify-content-end">
-        <form class="my-2 my-lg-0" action="/admin/sign_out" method="post">
-            <button class="btn btn-outline-info my-2 my-sm-0">SignOut</button>
-        </form>
-    </nav>
+    {{ template "header_admin" . }}
 
     <div class="list-group">
         <a href="/admin/two_factor_auth" class="list-group-item list-group-item-action flex-column align-items-start">
@@ -27,7 +23,7 @@
                 <div class="d-flex w-100 justify-content-between">
                     <h5 class="mb-1">User</h5>
                 </div>
-                <p class="mb-1">New user sign up</p>
+                <p class="mb-1">User list and sign up</p>
             </a>
         {{end}}
     </div>
