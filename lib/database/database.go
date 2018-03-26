@@ -100,101 +100,92 @@ func (d *DB) Close() error {
 }
 
 func (d *DB) AutoMigrate(values ...interface{}) *DB {
-	d.db = d.db.AutoMigrate(values...)
-	return d
+	return newDB(d.db.AutoMigrate(values...))
 }
 
 func (d *DB) Where(query interface{}, args ...interface{}) IDatabase {
-	d.db = d.db.Where(query, args...)
-	return d
+	return newDB(d.db.Where(query, args...))
 }
 
 func (d *DB) Or(query interface{}, args ...interface{}) IDatabase {
-	d.db = d.db.Or(query, args...)
-	return d
+	return newDB(d.db.Or(query, args...))
 }
 
 func (d *DB) Not(query interface{}, args ...interface{}) IDatabase {
-	d.db = d.db.Not(query, args...)
-	return d
+	return newDB(d.db.Not(query, args...))
 }
 
 func (d *DB) Limit(limit interface{}) IDatabase {
-	d.db = d.db.Limit(limit)
-	return d
+	return newDB(d.db.Limit(limit))
 }
 
 func (d *DB) Offset(offset interface{}) IDatabase {
-	d.db = d.db.Offset(offset)
-	return d
+	return newDB(d.db.Offset(offset))
 }
 
 func (d *DB) Order(value interface{}, reorder ...bool) IDatabase {
-	d.db = d.db.Order(value, reorder...)
-	return d
+	return newDB(d.db.Order(value, reorder...))
 }
 
 func (d *DB) Select(query interface{}, args ...interface{}) IDatabase {
-	d.db = d.db.Select(query, args...)
-	return d
+	return newDB(d.db.Select(query, args...))
 }
 func (d *DB) Attrs(attrs ...interface{}) IDatabase {
-	d.db = d.db.Attrs(attrs...)
-	return d
+	return newDB(d.db.Attrs(attrs...))
 }
 
 func (d *DB) First(out interface{}, where ...interface{}) IDatabase {
-	d.db = d.db.First(out, where...)
+	newDB(d.db.First(out, where...))
 	return d
 }
 
 func (d *DB) Take(out interface{}, where ...interface{}) IDatabase {
-	d.db = d.db.Take(out, where...)
+	d.db.Take(out, where...)
 	return d
 }
 
 func (d *DB) Last(out interface{}, where ...interface{}) IDatabase {
-	d.db = d.db.Last(out, where...)
+	d.db.Last(out, where...)
 	return d
 }
 
 func (d *DB) Find(out interface{}, where ...interface{}) IDatabase {
-	d.db = d.db.Find(out, where...)
+	d.db.Find(out, where...)
 	return d
 }
 
 func (d *DB) Count(value interface{}) IDatabase {
-	d.db = d.db.Count(value)
+	d.db.Count(value)
 	return d
 }
 
 func (d *DB) FirstOrCreate(out interface{}, where ...interface{}) IDatabase {
-	d.db = d.db.FirstOrCreate(out, where...)
+	d.db.FirstOrCreate(out, where...)
 	return d
 }
 
 func (d *DB) Update(attrs ...interface{}) IDatabase {
-	d.db = d.db.Update(attrs)
+	d.db.Update(attrs)
 	return d
 }
 
 func (d *DB) Updates(values interface{}, ignoreProtectedAttrs ...bool) IDatabase {
-	d.db = d.db.Updates(values, ignoreProtectedAttrs...)
+	d.db.Updates(values, ignoreProtectedAttrs...)
 	return d
 }
 
 func (d *DB) Save(value interface{}) IDatabase {
-	d.db = d.db.Save(value)
+	d.db.Save(value)
 	return d
 }
 
 func (d *DB) Create(value interface{}) IDatabase {
-	d.db = d.db.Create(value)
+	d.db.Create(value)
 	return d
 }
 
 func (d *DB) Delete(value interface{}, where ...interface{}) IDatabase {
-	d.db = d.db.Delete(value)
+	d.db.Delete(value)
 	return d
 }
 
@@ -204,13 +195,12 @@ func (d *DB) Raw(sql string, values ...interface{}) IDatabase {
 }
 
 func (d *DB) Exec(sql string, values ...interface{}) IDatabase {
-	d.db = d.db.Exec(sql, values...)
+	d.db.Exec(sql, values...)
 	return d
 }
 
 func (d *DB) Table(name string) IDatabase {
-	d.db = d.db.Table(name)
-	return d
+	return newDB(d.db.Table(name))
 }
 
 func (d *DB) Begin() IDatabase {
