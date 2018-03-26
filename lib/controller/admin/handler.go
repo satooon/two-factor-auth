@@ -6,6 +6,8 @@ import (
 
 	"net/url"
 
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"github.com/satooon/two-factor-auth/lib/conf/env"
@@ -189,9 +191,21 @@ func (ctl *admin) TwoFactorAuthValidate(c *gin.Context) {
 }
 
 func (ctl *admin) User(c *gin.Context) {
+	offset, err := strconv.Atoi(c.Query("offset"))
+	if err != nil {
+		offset = 0
+	}
+	userPaginate, err := repository.NewUser(database.Default(c)).Paginate(userLimit, offset)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
 	c.HTML(http.StatusOK, "view/admin/user.tmpl", gin.H{
-		"Error":   c.QueryArray("error"),
-		"Success": c.QueryArray("success"),
+		"Error":        c.QueryArray("error"),
+		"Success":      c.QueryArray("success"),
+		"UserPaginate": userPaginate,
+		"EnvApp":       env.App(),
 	})
 }
 
@@ -201,7 +215,7 @@ type UserSignUpRequest struct {
 }
 
 func (ctl *admin) UserSignUp(c *gin.Context) {
-	var req SignInRequest
+	var req UserSignUpRequest
 	if err := c.Bind(&req); err != nil {
 		c.Redirect(http.StatusFound, "/admin/user?error="+url.QueryEscape(err.Error()))
 		return
@@ -209,12 +223,20 @@ func (ctl *admin) UserSignUp(c *gin.Context) {
 
 	repo := repository.NewUser(database.Default(c))
 
-	user, err := repo.NewEntity(env.App(), env.Auth(), req.Mail, req.Password, entity.RoleUser)
-	if err != nil {
+	if err := repo.Transaction(func() error {
+		user, err := repo.NewEntity(env.App(), env.Auth(), req.Mail, req.Password, entity.RoleUser)
+		if err != nil {
+			return err
+		}
+		return repo.Save(user)
+	}); err != nil {
 		c.Redirect(http.StatusFound, "/admin/user?error="+url.QueryEscape(err.Error()))
 		return
 	}
-	if err := repo.Save(user); err != nil {
+
+	c.Redirect(http.StatusFound, "/admin/user?success="+url.QueryEscape("User sign up Success"))
+}
+
 type UserDeleteRequest struct {
 	ID int `form:"id"`
 }
