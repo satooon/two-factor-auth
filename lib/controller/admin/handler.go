@@ -19,6 +19,8 @@ import (
 const (
 	qrWidth  = 200
 	qrHeight = 200
+
+	userLimit = 20
 )
 
 type admin struct{}
@@ -67,6 +69,7 @@ func (ctl *admin) Routes(r gin.IRouter) {
 				})
 				g4.GET("", ctl.User)
 				g4.POST("/sign_up", ctl.UserSignUp)
+				g4.POST("/delete", ctl.UserDelete)
 			}
 		}
 	}
@@ -212,9 +215,33 @@ func (ctl *admin) UserSignUp(c *gin.Context) {
 		return
 	}
 	if err := repo.Save(user); err != nil {
+type UserDeleteRequest struct {
+	ID int `form:"id"`
+}
+
+func (ctl *admin) UserDelete(c *gin.Context) {
+	var req UserDeleteRequest
+	if err := c.Bind(&req); err != nil {
 		c.Redirect(http.StatusFound, "/admin/user?error="+url.QueryEscape(err.Error()))
 		return
 	}
 
-	c.Redirect(http.StatusFound, "/admin/user?success="+url.QueryEscape("User sign up Success"))
+	repo := repository.NewUser(database.Default(c))
+
+	if err := repo.Transaction(func() error {
+		userSlice, err := repo.FindByID(req.ID)
+		if err != nil {
+			return err
+		}
+		user, err := userSlice.First(func(u *entity.User) bool { return true })
+		if err != nil {
+			return err
+		}
+		return repo.Delete(user)
+	}); err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.Redirect(http.StatusFound, "/admin/user?success="+url.QueryEscape("User delete Success"))
 }
